@@ -44,7 +44,11 @@ $request['params'] = $route['params'];
 
 // 获取响应数据
 $className = 'App\Controllers\\' . $controller;
-$response = \App\Services\IocService::getInstance($className)->$function($request);
+try {
+    $response = \App\Services\IocService::getInstance($className)->$function($request);
+} catch (\App\Exceptions\ApplicationException $e) {
+    $response['code'] = $e->getCode();
+}
 
 // 整理响应数据
 $return = [];

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ApplicationException;
 use App\Facades\DB;
 
 class UserRepository
@@ -37,14 +38,15 @@ class UserRepository
         ]);
         $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
 
-        if (0) {
-            return [
-                'code' => 40002,
-                'params' => [
-                    'time' => 3,
-                    'min' => 5
-                ]
-            ];
+        if (1) {
+            throw new ApplicationException(40001);
+//            return [
+//                'code' => 40002,
+//                'params' => [
+//                    'time' => 3,
+//                    'min' => 5
+//                ]
+//            ];
         } else {
             return [
                 'total' => count($lessons),

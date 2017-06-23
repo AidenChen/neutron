@@ -56,5 +56,10 @@ if (!isset($response['code'])) {
 $parameters = isset($response['params']) ? $response['params'] : [];
 $return['message'] = (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $parameters);
 
+$log = new \Monolog\Logger('logger');
+$log->pushHandler(new \Monolog\Handler\StreamHandler(ROOTPATH . '/storage/logs/test.log', \Monolog\Logger::INFO));
+$log->warning('Foo');
+$log->error('Bar');
+
 // 响应
 echo json_encode($return);

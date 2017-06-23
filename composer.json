@@ -11,7 +11,8 @@
     ],
     "require": {
         "robmorgan/phinx": "^0.8.1",
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "monolog/monolog": "^1.23"
     },
     "autoload": {
         "psr-4": {

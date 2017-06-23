@@ -22,9 +22,7 @@ class PdoService
 
     private function Connect()
     {
-        $config = require(ROOTPATH . '/config/config.php');
-        $type = $config['db']['type'];
-        $settings = $config['db'][$type];
+        $settings = config('database.connections.mysql');
         $dsn = 'mysql:dbname=' . $settings['database'] . ';host=' . $settings['host'] . ';charset=utf8';
         try {
             $this->pdo = new \PDO($dsn, $settings['username'], $settings['password'], [

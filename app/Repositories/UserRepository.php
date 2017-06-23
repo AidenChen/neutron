@@ -4,9 +4,21 @@ namespace App\Repositories;
 
 use App\Exceptions\ApplicationException;
 use App\Facades\DB;
+use App\Transformers\LessonTransformer;
 
 class UserRepository
 {
+    protected $lessonTransformer;
+
+    /**
+     * UserRepository constructor.
+     * @param $lessonTransformer
+     */
+    public function __construct(LessonTransformer $lessonTransformer)
+    {
+        $this->lessonTransformer = $lessonTransformer;
+    }
+
     public function index($request)
     {
         $size = isset($request['data']['page_size']) ? $request['data']['page_size'] : 10;
@@ -38,7 +50,7 @@ class UserRepository
         ]);
         $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
 
-        if (1) {
+        if (0) {
             throw new ApplicationException(40001);
 //            return [
 //                'code' => 40002,
@@ -50,7 +62,7 @@ class UserRepository
         } else {
             return [
                 'total' => count($lessons),
-                'items' => $lessons
+                'items' => $this->lessonTransformer->collection($lessons)
             ];
         }
     }

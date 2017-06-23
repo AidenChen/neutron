@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\ApplicationException;
+
 class PdoService
 {
     private $pdo;
@@ -45,11 +47,12 @@ class PdoService
 
     private function outputError($strErrMsg, $query = '')
     {
-        die(json_encode([
-            'success' => false,
-            'detail' => $strErrMsg,
-            'query' => $query
-        ]));
+        throw new ApplicationException(50000);
+//        die(json_encode([
+//            'success' => false,
+//            'detail' => $strErrMsg,
+//            'query' => $query
+//        ]));
     }
 
     private function Init($query, $parameters = '')

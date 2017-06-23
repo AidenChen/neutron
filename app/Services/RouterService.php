@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\ApplicationException;
+
 class RouterService
 {
     public function dispatch($method, $path)
@@ -15,17 +17,14 @@ class RouterService
                 if (!is_null($params)) {
                     array_shift($params);
                     $return = array_merge($route, [
-                        'params' => $params,
-                        'success' => true
+                        'params' => $params
                     ]);
                     return $return;
                 }
             }
         }
 
-        return [
-            'success' => false
-        ];
+        throw new ApplicationException(40003);
     }
 
     private function checkUrl($path, $pattern)

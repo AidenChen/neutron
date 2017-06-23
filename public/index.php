@@ -30,21 +30,16 @@ if ($method == 'GET') {
     $request['data'] = $util->dataDefenseSqlInsert($data);
 }
 
-// 匹配路由
-$router = new App\Services\RouterService();
-$route = $router->dispatch($method, $path);
-if (!$route['success']) {
-    $response['code'] = 40004;
-    echo json_encode($response);
-    exit;
-}
-$controller = $route['controller'];
-$function = $route['function'];
-$request['params'] = $route['params'];
-
-// 获取响应数据
-$className = 'App\Controllers\\' . $controller;
 try {
+    // 匹配路由
+    $router = new App\Services\RouterService();
+    $route = $router->dispatch($method, $path);
+    $controller = $route['controller'];
+    $function = $route['function'];
+    $request['params'] = $route['params'];
+
+    // 获取响应数据
+    $className = 'App\Controllers\\' . $controller;
     $response = \App\Services\IocService::getInstance($className)->$function($request);
 } catch (\App\Exceptions\ApplicationException $e) {
     $response['code'] = $e->getCode();

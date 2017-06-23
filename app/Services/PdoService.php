@@ -58,46 +58,41 @@ class PdoService
             $this->Connect();
         }
         try {
-            $this->sQuery = $this->pdo->prepare($query);
-
-            $this->bindMore($parameters);
+            $this->parameters = $parameters;
+            $this->sQuery = $this->pdo->prepare($this->BuildParams($query, $this->parameters));
 
             if (!empty($this->parameters)) {
-                foreach ($this->parameters as $param => $value) {
-                    if (is_int($value[1])) {
-                        $type = \PDO::PARAM_INT;
-                    } elseif (is_bool($value[1])) {
-                        $type = \PDO::PARAM_BOOL;
-                    } elseif (is_null($value[1])) {
-                        $type = \PDO::PARAM_NULL;
-                    } else {
-                        $type = \PDO::PARAM_STR;
-                    }
-                    $this->sQuery->bindValue($value[0], $value[1], $type);
+                if (array_key_exists(0, $parameters)) {
+                    $parametersType = true;
+                    array_unshift($this->parameters, '');
+                    unset($this->parameters[0]);
+                } else {
+                    $parametersType = false;
+                }
+                foreach ($this->parameters as $column => $value) {
+                    $this->sQuery->bindParam($parametersType ? intval($column) : ':' . $column, $this->parameters[$column]);
                 }
             }
 
             $this->sQuery->execute();
         } catch (\PDOException $e) {
-            $this->outputError($e->getMessage(), $query);
+            $this->outputError($e->getMessage(), $this->BuildParams($query));
         }
 
         $this->parameters = [];
     }
 
-    public function bind($para, $value)
+    private function BuildParams($query, $params = null)
     {
-        $this->parameters[sizeof($this->parameters)] = [':' . $para, $value];
-    }
-
-    public function bindMore($parray)
-    {
-        if (empty($this->parameters) && is_array($parray)) {
-            $columns = array_keys($parray);
-            foreach ($columns as $i => &$column) {
-                $this->bind($column, $parray[$column]);
+        if (!empty($params)) {
+            $rawStatement = explode(' ', $query);
+            foreach ($rawStatement as $value) {
+                if (strtolower($value) === 'in') {
+                    return str_replace('(?)', '(' . implode(',', array_fill(0, count($params), '?')) . ')', $query);
+                }
             }
         }
+        return $query;
     }
 
     public function query($query, $params = null, $fetchmode = \PDO::FETCH_ASSOC)

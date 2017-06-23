@@ -21,7 +21,7 @@ if ($json) {
 }
 $params = $_GET;
 
-// 整合
+// 整理请求数据
 $request = [];
 $util = new App\Services\UtilService();
 if ($method == 'GET') {
@@ -29,11 +29,6 @@ if ($method == 'GET') {
 } elseif (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
     $request['data'] = $util->dataDefenseSqlInsert($data);
 }
-
-//初始化响应
-$response = [
-    'code' => 40001
-];
 
 // 匹配路由
 $router = new App\Services\RouterService();
@@ -47,9 +42,20 @@ $controller = $route['controller'];
 $function = $route['function'];
 $request['params'] = $route['params'];
 
-// 调用方法
+// 获取响应数据
 $className = 'App\Controllers\\' . $controller;
 $response = \App\Services\IocService::getInstance($className)->$function($request);
 
+// 整理响应数据
+$return = [];
+if (!isset($response['code'])) {
+    $return['code'] = 0;
+    $return['data'] = $response;
+} else {
+    $return['code'] = $response['code'];
+}
+$parameters = isset($response['params']) ? $response['params'] : [];
+$return['message'] = (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $parameters);
+
 // 响应
-echo json_encode($response);
+echo json_encode($return);

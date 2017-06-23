@@ -20,12 +20,8 @@ class UserRepository
         ]);
 
         return [
-            'code' => 0,
-            'msg' => '请求成功！',
-            'data' => [
-                'total' => $count,
-                'items' => $users
-            ]
+            'total' => $count,
+            'items' => $users
         ];
     }
 
@@ -41,13 +37,19 @@ class UserRepository
         ]);
         $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
 
-        return [
-            'code' => 0,
-            'msg' => '请求成功！',
-            'data' => [
+        if (0) {
+            return [
+                'code' => 40002,
+                'params' => [
+                    'time' => 3,
+                    'min' => 5
+                ]
+            ];
+        } else {
+            return [
                 'total' => count($lessons),
                 'items' => $lessons
-            ]
-        ];
+            ];
+        }
     }
 }

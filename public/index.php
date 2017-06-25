@@ -22,12 +22,15 @@ if ($json) {
 $params = $_GET;
 
 // 整理请求数据
-$request = [];
+$request = new StdClass();
 $util = new App\Services\UtilService();
 if ($method == 'GET') {
-    $request['data'] = $util->dataDefenseSqlInsert($params);
+    $requestData = $util->dataDefenseSqlInsert($params);
 } elseif (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
-    $request['data'] = $util->dataDefenseSqlInsert($data);
+    $requestData = $util->dataDefenseSqlInsert($data);
+}
+foreach ($requestData as $key => $val) {
+    $request->$key = $val;
 }
 
 try {
@@ -36,13 +39,16 @@ try {
     $route = $router->dispatch($method, $path);
     $controller = $route['controller'];
     $function = $route['function'];
-    $request['params'] = $route['params'];
+    $routeParams = $route['params'];
 
     // 获取响应数据
     $className = 'App\Controllers\\' . $controller;
-    $response = \App\Services\IocService::getInstance($className)->$function($request);
+    $response = \App\Services\IocService::getInstance($className)->$function($request, ...$routeParams);
 } catch (\App\Exceptions\ApplicationException $e) {
     $response['code'] = $e->getCode();
+    if ($message = $e->getMessage()) {
+        $response['message'] = $message;
+    }
 }
 
 // 整理响应数据
@@ -54,12 +60,12 @@ if (!isset($response['code'])) {
     $return['code'] = $response['code'];
 }
 $parameters = isset($response['params']) ? $response['params'] : [];
-$return['message'] = (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $parameters);
+$return['message'] = isset($response['message']) ? $response['message'] : (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $parameters);
 
-$log = new \Monolog\Logger('logger');
-$log->pushHandler(new \Monolog\Handler\StreamHandler(ROOTPATH . '/storage/logs/test.log', \Monolog\Logger::INFO));
-$log->warning('Foo');
-$log->error('Bar');
+// 日志记录
+$logger = new \Monolog\Logger('API');
+$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(ROOTPATH . '/storage/logs/neutron.log', 5, \Monolog\Logger::DEBUG));
+$logger->addDebug('API调用记录', $requestData);
 
 // 响应
 echo json_encode($return);

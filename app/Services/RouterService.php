@@ -32,7 +32,7 @@ class RouterService
         $match = [];
         $pattern = ltrim(rtrim($pattern, '/'));
         $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-        $pattern = str_replace(':id', '([0-9]+)', $pattern);
+        $pattern = preg_replace('/\{(.+?)\}/i', '([0-9]+)', $pattern);
         if (preg_match($pattern, $path, $match) > 0) {
             return $match;
         }

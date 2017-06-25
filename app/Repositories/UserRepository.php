@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Exceptions\ApplicationException;
 use App\Facades\DB;
 use App\Transformers\LessonTransformer;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator;
 
 class UserRepository
 {
@@ -40,15 +42,26 @@ class UserRepository
 
     public function indexLesson($request)
     {
-        $name = $request['data']['name'];
+        $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1,5)->setName('name'));
+        try {
+            $validator->assert($request);
+        } catch(NestedValidationException $exception) {
+            $errors = $exception->findMessages([
+                'length' => '{{name}}',
+                'noWhitespace' => '{{name}}'
+            ]);
+            print_r($errors);
+            exit();
+            throw new ApplicationException(42000, $exception->getMessages()[count($exception->getMessages()) - 1]);
+        }
 
-        $userId = DB::single('select id from users where name = :name', [
-            'name' => $name
-        ]);
-        $lessonIds = DB::column('select lesson_id from lesson_user where user_id = :user_id', [
-            'user_id' => $userId
-        ]);
-        $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
+//        $userId = DB::single('select id from users where name = :name', [
+//            'name' => $name
+//        ]);
+//        $lessonIds = DB::column('select lesson_id from lesson_user where user_id = :user_id', [
+//            'user_id' => $userId
+//        ]);
+//        $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
 
         if (0) {
             throw new ApplicationException(40001);
@@ -61,8 +74,8 @@ class UserRepository
 //            ];
         } else {
             return [
-                'total' => count($lessons),
-                'items' => $this->lessonTransformer->collection($lessons)
+//                'total' => count($lessons),
+//                'items' => $this->lessonTransformer->collection($lessons)
             ];
         }
     }

@@ -21,10 +21,17 @@ class ExceptionService
         50004 => '数据查询失败！',
     ];
 
-    public function getErrorMessage($code, $params = [])
+    public function getErrorMessage($code, $params = [], $details = [])
     {
         $message = $this->message[$code];
 
+        if (count($details)) {
+            foreach ($details as $key => $val) {
+                if (strlen($val)) {
+                    $message = $val;
+                }
+            }
+        }
         if (count($params)) {
             foreach ($params as $key => $val) {
                 $message = str_replace(':' . $key, $params[$key], $message);

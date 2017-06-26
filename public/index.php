@@ -15,19 +15,19 @@ $method = $_SERVER['REQUEST_METHOD'];
 $path = $_SERVER['PATH_INFO'];
 $json = file_get_contents('php://input');
 if ($json) {
-    $data = json_decode($json, true);
+    $requestBody = json_decode($json, true);
 } else {
-    $data = $_POST;
+    $requestBody = $_POST;
 }
-$params = $_GET;
+$requestParams = $_GET;
 
 // 整理请求数据
 $request = new StdClass();
 $util = new App\Services\UtilService();
 if ($method == 'GET') {
-    $requestData = $util->dataDefenseSqlInsert($params);
+    $requestData = $util->dataDefenseSqlInsert($requestParams);
 } elseif (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
-    $requestData = $util->dataDefenseSqlInsert($data);
+    $requestData = $util->dataDefenseSqlInsert($requestBody);
 }
 foreach ($requestData as $key => $val) {
     $request->$key = $val;
@@ -46,9 +46,6 @@ try {
     $response = \App\Services\IocService::getInstance($className)->$function($request, ...$routeParams);
 } catch (\App\Exceptions\ApplicationException $e) {
     $response['code'] = $e->getCode();
-    if ($message = $e->getMessage()) {
-        $response['message'] = $message;
-    }
 }
 
 // 整理响应数据
@@ -59,8 +56,9 @@ if (!isset($response['code'])) {
 } else {
     $return['code'] = $response['code'];
 }
-$parameters = isset($response['params']) ? $response['params'] : [];
-$return['message'] = isset($response['message']) ? $response['message'] : (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $parameters);
+$responseParams = isset($response['params']) ? $response['params'] : [];
+$responseDetails = isset($response['details']) ? $response['details'] : [];
+$return['message'] = (new \App\Services\ExceptionService())->getErrorMessage($return['code'], $responseParams, $responseDetails);
 
 // 日志记录
 $logger = new \Monolog\Logger('API');

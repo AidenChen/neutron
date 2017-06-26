@@ -23,8 +23,8 @@ class UserRepository
 
     public function index($request)
     {
-        $size = isset($request['data']['page_size']) ? $request['data']['page_size'] : 10;
-        $index = isset($request['data']['page_index']) ? $request['data']['page_index'] : 1;
+        $size = isset($request->page_size) ? $request->page_size : 10;
+        $index = isset($request->page_index) ? $request->page_index : 1;
         $size = $size > 200 ? 200 : $size;
         $index = ($index - 1) * $size;
 
@@ -42,40 +42,30 @@ class UserRepository
 
     public function indexLesson($request)
     {
-        $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1,5)->setName('name'));
+        $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1, 20)->setName('姓名'));
         try {
             $validator->assert($request);
         } catch(NestedValidationException $exception) {
-            $errors = $exception->findMessages([
-                'length' => '{{name}}',
-                'noWhitespace' => '{{name}}'
-            ]);
-            print_r($errors);
-            exit();
-            throw new ApplicationException(42000, $exception->getMessages()[count($exception->getMessages()) - 1]);
+            return [
+                'code' => 42000,
+                'details' => $exception->findMessages(config('validation'))
+            ];
         }
 
-//        $userId = DB::single('select id from users where name = :name', [
-//            'name' => $name
-//        ]);
-//        $lessonIds = DB::column('select lesson_id from lesson_user where user_id = :user_id', [
-//            'user_id' => $userId
-//        ]);
-//        $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
+        $userId = DB::single('select id from users where name = :name', [
+            'name' => $request->name
+        ]);
+        $lessonIds = DB::column('select lesson_id from lesson_user where user_id = :user_id', [
+            'user_id' => $userId
+        ]);
+        $lessons = DB::query('select * from lessons where id in (?)', $lessonIds);
 
         if (0) {
             throw new ApplicationException(40001);
-//            return [
-//                'code' => 40002,
-//                'params' => [
-//                    'time' => 3,
-//                    'min' => 5
-//                ]
-//            ];
         } else {
             return [
-//                'total' => count($lessons),
-//                'items' => $this->lessonTransformer->collection($lessons)
+                'total' => count($lessons),
+                'items' => $this->lessonTransformer->collection($lessons)
             ];
         }
     }

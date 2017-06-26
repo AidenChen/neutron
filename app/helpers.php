@@ -44,13 +44,9 @@ if (! function_exists('env')) {
 }
 
 if (! function_exists('dd')) {
-    function dd($data)
+    function dd($data = '')
     {
-        if (is_array($data)) {
-            echo json_encode($data);
-        } else {
-            echo $data;
-        }
-        exit();
+        echo '<pre>' . print_r($data, true) . '</pre>';
+        die();
     }
 }

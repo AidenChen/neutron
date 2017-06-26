@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('config')) {
+if (! function_exists('config')) {
     function config($key = null, $default = null)
     {
         if (is_null($key)) {
@@ -25,10 +25,10 @@ if (!function_exists('config')) {
     }
 }
 
-if (!function_exists('env')) {
+if (! function_exists('env')) {
     function env($key, $default = null)
     {
-        if (!$key) {
+        if (! $key) {
             return $default;
         }
 
@@ -40,5 +40,13 @@ if (!function_exists('env')) {
             return $default;
         }
         return $env;
+    }
+}
+
+if (! function_exists('dd')) {
+    function dd($data)
+    {
+        echo json_encode($data);
+        exit();
     }
 }

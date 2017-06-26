@@ -50,7 +50,7 @@ try {
 
 // 整理响应数据
 $return = [];
-if (!isset($response['code'])) {
+if (! isset($response['code'])) {
     $return['code'] = 0;
     $return['data'] = $response;
 } else {

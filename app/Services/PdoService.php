@@ -55,14 +55,14 @@ class PdoService
 
     private function Init($query, $parameters = '')
     {
-        if (!$this->bConnected) {
+        if (! $this->bConnected) {
             $this->Connect();
         }
         try {
             $this->parameters = $parameters;
             $this->sQuery = $this->pdo->prepare($this->BuildParams($query, $this->parameters));
 
-            if (!empty($this->parameters)) {
+            if (! empty($this->parameters)) {
                 if (array_key_exists(0, $parameters)) {
                     $parametersType = true;
                     array_unshift($this->parameters, '');
@@ -85,7 +85,7 @@ class PdoService
 
     private function BuildParams($query, $params = null)
     {
-        if (!empty($params)) {
+        if (! empty($params)) {
             $rawStatement = explode(' ', $query);
             foreach ($rawStatement as $value) {
                 if (strtolower($value) === 'in') {

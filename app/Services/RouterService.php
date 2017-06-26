@@ -14,7 +14,7 @@ class RouterService
             $pats = explode(' ', $pattern);
             if (strcasecmp($pats[0], $method) == 0) {
                 $params = $this->checkUrl($path, strtolower($pats[1]));
-                if (!is_null($params)) {
+                if (! is_null($params)) {
                     array_shift($params);
                     $return = array_merge($route, [
                         'params' => $params

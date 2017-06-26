@@ -32,6 +32,7 @@ if ($method == 'GET') {
 foreach ($requestData as $key => $val) {
     $request->$key = $val;
 }
+$request->headers = [];
 
 try {
     // 匹配路由

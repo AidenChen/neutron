@@ -25,9 +25,9 @@ class TokenService
         $signer = new Sha256();
         $token = (new Builder())
             ->setIssuedAt(time())
-            ->setExpiration(time() + 3600)
+            ->setExpiration(time() + config('jwt.ttl'))
             ->set('uid', $uid)
-            ->sign($signer, env('JWT_SECRET'))
+            ->sign($signer, config('jwt.secret'))
             ->getToken();
         return $token;
     }
@@ -48,15 +48,15 @@ class TokenService
         $data = new ValidationData();
 
         if (! $token = $this->parse($token)) {
-            throw new ApplicationException(40000);
+            throw new ApplicationException(40101);
         }
 
-        if (! $token->verify($signer, env('JWT_SECRET'))) {
-            throw new ApplicationException(40000);
+        if (! $token->verify($signer, config('jwt.secret'))) {
+            throw new ApplicationException(40103);
         }
 
         if (! $token->validate($data)) {
-            throw new ApplicationException(40000);
+            throw new ApplicationException(40102);
         }
 
         $uid = $token->getClaim('uid');

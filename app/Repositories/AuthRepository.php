@@ -14,7 +14,7 @@ class AuthRepository
     {
         $token = Token::generate(26);
 
+        dd($token);
         $id = Token::validate($token);
-        dd($id);
     }
 }

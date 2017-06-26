@@ -52,8 +52,6 @@ class UserRepository
             ];
         }
 
-        dd($request->token);
-
         $userId = DB::single('select id from users where name = :name', [
             'name' => $request->name
         ]);

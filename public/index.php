@@ -12,7 +12,8 @@ require __DIR__ . '/../bootstrap/autoload.php';
 
 // 获取请求数据
 $method = $_SERVER['REQUEST_METHOD'];
-$path = $_SERVER['PATH_INFO'];
+//$path = $_SERVER['PATH_INFO'];
+$path = explode('?', $_SERVER['REQUEST_URI'])[0];
 $json = file_get_contents('php://input');
 if ($json) {
     $requestBody = json_decode($json, true);

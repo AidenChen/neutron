@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Middlewares;
+namespace App\Middleware;
 
 use App\Facades\Token;
 use Closure;

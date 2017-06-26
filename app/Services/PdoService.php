@@ -14,10 +14,20 @@ class PdoService
 
     private $parameters;
 
+    private static $instance;
+
     public function __construct()
     {
         $this->Connect();
         $this->parameters = [];
+    }
+
+    public static function getInstance()
+    {
+        if (! (self::$instance instanceof self)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     private function Connect()

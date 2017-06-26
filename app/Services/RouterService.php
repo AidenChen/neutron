@@ -24,7 +24,7 @@ class RouterService
             }
         }
 
-        throw new ApplicationException(40003);
+        throw new ApplicationException(40002);
     }
 
     private function checkUrl($path, $pattern)

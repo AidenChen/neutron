@@ -2,12 +2,12 @@
 
 namespace App\Facades;
 
-use App\Services\PdoService;
+use App\Services\TokenService;
 
-class DB extends Facade
+class Token extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return PdoService::class;
+        return TokenService::class;
     }
 }

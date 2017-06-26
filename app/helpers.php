@@ -46,7 +46,11 @@ if (! function_exists('env')) {
 if (! function_exists('dd')) {
     function dd($data)
     {
-        echo json_encode($data);
+        if (is_array($data)) {
+            echo json_encode($data);
+        } else {
+            echo $data;
+        }
         exit();
     }
 }

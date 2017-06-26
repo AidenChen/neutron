@@ -45,12 +45,14 @@ class UserRepository
         $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1, 20)->setName('姓名'));
         try {
             $validator->assert($request);
-        } catch(NestedValidationException $exception) {
+        } catch (NestedValidationException $exception) {
             return [
                 'code' => 42000,
                 'details' => $exception->findMessages(config('validation'))
             ];
         }
+
+        dd($request->token);
 
         $userId = DB::single('select id from users where name = :name', [
             'name' => $request->name

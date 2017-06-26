@@ -39,11 +39,14 @@ try {
     $route = $router->dispatch($method, $path);
     $controller = $route['controller'];
     $function = $route['function'];
+    $middleware = isset($route['middleware']) && count($route['middleware']) ? $route['middleware'] : [];
     $routeParams = $route['params'];
 
     // 获取响应数据
     $className = 'App\Controllers\\' . $controller;
-    $response = \App\Services\IocService::getInstance($className)->$function($request, ...$routeParams);
+    $response = (new \App\Services\MiddlewareService($middleware))->then($request, function() use ($className, $function, $request, $routeParams) {
+        return \App\Services\IocService::getInstance($className)->$function($request, ...$routeParams);
+    });
 } catch (\App\Exceptions\ApplicationException $e) {
     $response['code'] = $e->getCode();
 }

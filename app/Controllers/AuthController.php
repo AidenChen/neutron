@@ -13,6 +13,11 @@ class AuthController
         $this->authRepository = $authRepository;
     }
 
+    public function register($request)
+    {
+        return $this->authRepository->register($request);
+    }
+
     public function login($request)
     {
         return $this->authRepository->login($request);

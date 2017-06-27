@@ -42,7 +42,7 @@ class UserRepository
 
     public function indexLesson($request)
     {
-        $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1, 20)->setName('姓名'));
+        $validator = Validator::attribute('name', Validator::stringType()->noWhitespace()->length(1, 20)->setName('用户名'), true);
         try {
             $validator->assert($request);
         } catch (NestedValidationException $exception) {

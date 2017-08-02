@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+if ($argc > 1) {
+    switch ($argv[1]) {
+        case 'make:migration':
+            exec('vendor\bin\phinx create ' . $argv[2] . 'Migration');
+            break;
+        case 'migrate:init':
+            exec('vendor\bin\phinx init');
+            break;
+        case 'migrate':
+            exec('vendor\bin\phinx migrate -e development');
+            break;
+        case 'migrate:rollback':
+            exec('vendor\bin\phinx rollback -e development');
+            break;
+    }
+}
